@@ -58,7 +58,7 @@ cd 当前目录
 ## 5. 压力测试  
 Ubuntu 20.04  
 i5第11代  
-内存: 8G
+内存: 8G  
 ![image-webbench](https://github.com/lizyzzz/lizy-WebServer/blob/main/%E5%8E%8B%E5%8A%9B%E6%B5%8B%E8%AF%95.png)
 
 ## 6. 致谢
