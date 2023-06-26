@@ -56,7 +56,7 @@ cd 当前目录
 例如: http://127.0.0.1:8888/
 ```
 ## 5. 压力测试
-
+https://github.com/lizyzzz/lizy-WebServer/blob/main/%E5%8E%8B%E5%8A%9B%E6%B5%8B%E8%AF%95.png
 
 ## 6. 致谢
 Linux高性能服务器编程，游双著.
