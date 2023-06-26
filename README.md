@@ -55,8 +55,11 @@ cd 当前目录
 打开服务器输入: http://你的ip地址:端口号/
 例如: http://127.0.0.1:8888/
 ```
-## 5. 压力测试
-https://github.com/lizyzzz/lizy-WebServer/blob/main/%E5%8E%8B%E5%8A%9B%E6%B5%8B%E8%AF%95.png
+## 5. 压力测试  
+Ubuntu 20.04  
+i5第11代  
+内存: 8G
+![image-webbench](https://github.com/lizyzzz/lizy-WebServer/blob/main/%E5%8E%8B%E5%8A%9B%E6%B5%8B%E8%AF%95.png)
 
 ## 6. 致谢
 Linux高性能服务器编程，游双著.
