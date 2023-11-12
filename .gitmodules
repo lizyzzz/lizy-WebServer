@@ -1,6 +1,8 @@
 [submodule "lizy_log"]
 	path = lizy_log
 	url = git@github.com:lizyzzz/lizy_log.git
+	branch = main
 [submodule "lizy_timewheel"]
 	path = lizy_timewheel
 	url = git@github.com:lizyzzz/lizy_timewheel.git
+	branch = main
