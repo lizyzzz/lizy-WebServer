@@ -10,7 +10,7 @@ WebServer::WebServer(int port, int trigMode, int timeoutMS, bool OpenLinger,
 {
     srcDir_ = getcwd(nullptr, 256);
     assert(srcDir_);
-    strncat(srcDir_, "/resources/", 16);
+    strncat(srcDir_, "/../resources/", 16);
 
     HttpConn::srcDir = srcDir_;
     HttpConn::userCount = 0;
@@ -25,7 +25,7 @@ WebServer::WebServer(int port, int trigMode, int timeoutMS, bool OpenLinger,
     }
     else {
         LOG(INFO) << "========================= Server init! =============================";
-        LOG(INFO) << "Port: " << port_ << ", OpenLinger: " << (port_, openLinger_ ? "true" : "false");
+        LOG(INFO) << "Port: " << port_ << ", OpenLinger: " << (openLinger_ ? "true" : "false");
         LOG(INFO) << "Listen Mode: "<< (listenEvent_ & EPOLLET ? "ET" : "LT") 
                   << ", OpenConn Mode: " << (connEvent_ & EPOLLET ? "ET" : "LT");
         LOG(INFO) << "srcDir: " << HttpConn::srcDir;
@@ -204,7 +204,7 @@ void WebServer::SendError_(int fd, const char* info) {
 
 void WebServer::CloseConn_(connPtr client) {
     assert(client);
-    LOG(INFO) << "Client[ " << client->GetFd() << "] quit!";
+    LOG(INFO) << "Client[" << client->GetFd() << "] quit!";
     epoller_->DelFd(client->GetFd());
 
     client->Close();
@@ -232,7 +232,7 @@ void WebServer::AddClient_(int fd, sockaddr_in addr) {
     }
     epoller_->AddFd(fd, EPOLLIN | connEvent_);
     SetFdNonBlock(fd);
-    LOG(INFO) << "Client[ " << hc->GetFd() << "] connected!";
+    LOG(INFO) << "Client[" << hc->GetFd() << "] connected!";
     std::lock_guard<std::mutex> lk(users_lock_);
     users_[fd] = hc;
 }

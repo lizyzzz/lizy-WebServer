@@ -15,7 +15,6 @@
 #include <mutex>
 
 #include "epoller.h"
-#include "../timer/heaptimer.h"
 #include "../pool/sqlconnpool.h"
 #include "../pool/sqlconnRAII.h"
 #include "../pool/ThreadPool.hpp"

@@ -9,6 +9,7 @@ int main(int argc, char const *argv[])
     SetLogDestination(LOG_ERROR, "");
     SetLogFilenameExtension(".log");
     SetTimestampInLogfileName(false);
+    SetLogBufSecs(10);
 
 
 

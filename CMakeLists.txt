@@ -5,7 +5,7 @@ project(lizyWebServer)
 add_compile_options(-g -w -std=c++17)
 
 file(GLOB SOURCE_CPPS 
-  "/src/pool/*.cpp" 
+  "./src/pool/*.cpp" 
   "./src/http/*.cpp" 
   "./src/server/*.cpp" 
   "./src/buffer/*.cpp"
