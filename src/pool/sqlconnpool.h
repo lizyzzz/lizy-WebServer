@@ -12,6 +12,7 @@
 #include <mutex>
 #include <semaphore.h>
 #include <assert.h>
+#include "../../lizy_log/include/logging.h"
 
 class SqlConnPool {
 public:

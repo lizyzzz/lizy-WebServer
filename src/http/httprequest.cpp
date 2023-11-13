@@ -76,7 +76,7 @@ bool HttpRequest::parse(Buffer& buff) {
 
 void HttpRequest::ParsePath_() {
     if (path_ == "/") {
-        path_ = "/index.html";
+        path_ = "/index2.html";
     }
     else {
         if (DEFAULT_HTML.count(path_)) {

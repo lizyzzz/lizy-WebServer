@@ -134,7 +134,7 @@ void Buffer::MakeSpace_(size_t len) {
     if (WritableBytes() + PrependableBytes() < len) {
         // PrependableBytes() 返回 readPos_, 该位置之前的已读
         // 可用的空间比 len 小
-        buffer_.resize(writePos_ + len);
+        buffer_.resize(writePos_ + len + 1);
     }
     else {
         // 可用的空间比 len 大
