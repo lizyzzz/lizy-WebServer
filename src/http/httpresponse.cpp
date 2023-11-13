@@ -129,7 +129,7 @@ void HttpResponse::AddContent_(Buffer& buff) {
         将文件映射到内存提高文件的访问速度
         MAP_PRIVATE 建立一个写入时拷贝的私有映射
     */
-    LOG_DEBUG("Content file path: %s", (srcDir_ + path_).c_str());
+    // LOG_DEBUG("Content file path: %s", (srcDir_ + path_).c_str());
     // 把 文件 fd 的 offset 偏移量开始的 length 字节 映射到 虚拟空间 start 地址开始的 lenth 字节
     int* mmRet = (int*)mmap(NULL, mmFileStat_.st_size, PROT_READ, MAP_PRIVATE, srcFd, 0);
     if (*mmRet == -1) {

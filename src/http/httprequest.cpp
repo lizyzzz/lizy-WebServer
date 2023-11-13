@@ -70,7 +70,7 @@ bool HttpRequest::parse(Buffer& buff) {
         }
         buff.RetrieveUntil(lineEnd + 2); // 跳过"\r\n"
     }
-    LOG_DEBUG("[%s], [%s], [%s]", method_.c_str(), path_.c_str(), version_.c_str());
+    // LOG_DEBUG("[%s], [%s], [%s]", method_.c_str(), path_.c_str(), version_.c_str());
     return true;
 }
 
@@ -97,7 +97,7 @@ bool HttpRequest::ParseRequestLine_(const std::string& line) {
         state_ = HEADERS;
         return true;
     }
-    LOG_ERROR("RequestLine Error");
+    // LOG_ERROR("RequestLine Error");
     return false;
 }
 
@@ -120,7 +120,7 @@ void HttpRequest::ParseBody_(const std::string& line) {
     body_ = line;
     ParsePost_();
     state_ = FINISH;
-    LOG_DEBUG("Body: %s, len: %d", body_.c_str(), body_.size());
+    // LOG_DEBUG("Body: %s, len: %d", body_.c_str(), body_.size());
 }
 
 void HttpRequest::ParsePost_() {
@@ -129,7 +129,7 @@ void HttpRequest::ParsePost_() {
         if (DEFAULT_HTML_TAG.count(path_)) {
             // 判断是否是登陆或者注册页面
             int tag = DEFAULT_HTML_TAG.at(path_);
-            LOG_DEBUG("Tag:%d", tag);
+            // LOG_DEBUG("Tag:%d", tag);
             if (tag == 0 || tag == 1) {
                 bool isLogin = (tag == 1);
                 if (UserVerify(post_.at("username"), post_.at("password"), isLogin)) {
@@ -184,7 +184,7 @@ void HttpRequest::ParseFromUrlencoded_() {
             {   value = body_.substr(j, i - j);
                 j = i + 1;
                 post_[key] = value;
-                LOG_DEBUG("%s = %s", key.c_str(), value.c_str());
+                // LOG_DEBUG("%s = %s", key.c_str(), value.c_str());
                 break;
             }
             default:
@@ -239,7 +239,7 @@ bool HttpRequest::UserVerify(const std::string& name, const std::string& pwd, bo
     if (name == "" || pwd == "") {
         return false;
     }
-    LOG_DEBUG("Verify name:%s pwd:%s", name.c_str(), pwd.c_str());
+    // LOG_DEBUG("Verify name:%s pwd:%s", name.c_str(), pwd.c_str());
 
     SqlConnRAII sql_ptr(SqlConnPool::GetInstance());
 
@@ -252,7 +252,7 @@ bool HttpRequest::UserVerify(const std::string& name, const std::string& pwd, bo
     order = "SELECT username, password FROM user WHERE username= '"; // 查询语句
     order.append(name);
     order += "'";
-    LOG_DEBUG("%s", order.c_str());
+    // LOG_DEBUG("%s", order.c_str());
     
     if (mysql_query(sql_ptr.GetPtr(), order.c_str()) != 0) {
         return false;
@@ -266,12 +266,12 @@ bool HttpRequest::UserVerify(const std::string& name, const std::string& pwd, bo
     if (row == 0) {
         // 查询结果为空
         if (isLogin) {
-            LOG_DEBUG("No this user!");
+            // LOG_DEBUG("No this user!");
             flag = false;
         }
         else {
             // 注册行为
-            LOG_DEBUG("Register!");
+            // LOG_DEBUG("Register!");
             order.clear();
             order = "INSERT INTO user(username, password) VALUE";
             order.append("('");
@@ -279,35 +279,35 @@ bool HttpRequest::UserVerify(const std::string& name, const std::string& pwd, bo
             order.append("','");
             order.append(pwd);
             order.append("')");
-            LOG_DEBUG("%s", order.c_str());
+            // LOG_DEBUG("%s", order.c_str());
             if (mysql_query(sql_ptr.GetPtr(), order.c_str()) != 0) {
-                LOG_DEBUG("INSERT error!");
+                // LOG_DEBUG("INSERT error!");
             }
             flag = true;
         }
     }
     else {
         MYSQL_ROW r = mysql_fetch_row(res); // 取出第一行记录
-        LOG_DEBUG("MYSQL ROW: %s %s", r[0], r[1]);
+        // LOG_DEBUG("MYSQL ROW: %s %s", r[0], r[1]);
         std::string password(r[1]);
         if (isLogin) {
             if (pwd == password) {
                 flag = true;
-                LOG_DEBUG("Login Success!");
+                // LOG_DEBUG("Login Success!");
             }
             else {
                 flag = false;
-                LOG_DEBUG("pwd error!");
+                // LOG_DEBUG("pwd error!");
             }
         }
         else {
             // 注册行为
             flag = false;
-            LOG_DEBUG("user used!");
+            // LOG_DEBUG("user used!");
         }
     }
 
     mysql_free_result(res);
-    LOG_DEBUG("UserVerify Finish!");
+    // LOG_DEBUG("UserVerify Finish!");
     return flag;
 }

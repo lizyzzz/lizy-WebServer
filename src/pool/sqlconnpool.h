@@ -11,7 +11,7 @@
 #include <thread>
 #include <mutex>
 #include <semaphore.h>
-#include "../log/log.h"
+#include <assert.h>
 
 class SqlConnPool {
 public:

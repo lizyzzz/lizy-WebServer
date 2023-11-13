@@ -14,12 +14,13 @@
 #include <memory>
 
 #include "epoller.h"
-#include "../log/log.h"
 #include "../timer/heaptimer.h"
 #include "../pool/sqlconnpool.h"
 #include "../pool/sqlconnRAII.h"
 #include "../pool/ThreadPool.hpp"
 #include "../http/httpconn.h"
+#include "../../lizy_log/include/logging.h"
+#include "../../lizy_timewheel/include/timewheel.h"
 
 class WebServer {
 public:
@@ -34,14 +35,11 @@ public:
     /// @param dbName 数据库库名
     /// @param sqlPoolNum 数据库连接池数量
     /// @param threadNum 线程池数量
-    /// @param openLog 日志开关
-    /// @param logLevel 日志等级 0-debug, 1-info, 2-warn, 3-error, default-info
-    /// @param logQueSize 日志异步队列长度
     /// @param MaxEvent 最大同时发生的事件数
     WebServer(int port, int trigMode, int timeoutMS, bool OpenLinger,
               int sqlPort, const char* sqlUser, const char* sqlPwd,
               const char* dbName, int sqlPoolNum, int threadNum,
-              bool openLog, int logLevel, int logQueSize, int MaxEvent);
+              int MaxEvent);
     
     ~WebServer();
     /// @brief 服务器运行函数
@@ -106,7 +104,7 @@ private:
     uint32_t listenEvent_;
     uint32_t connEvent_;
 
-    std::unique_ptr<HeapTimer> timer_;
+    std::unique_ptr<TimeWheel> timeWheel_;
     std::unique_ptr<ThreadPool> threadpool_;
     std::unique_ptr<Epoller> epoller_;
     std::unordered_map<int, HttpConn*> users_;

@@ -17,10 +17,12 @@ void HttpConn::Init(int sockFd, const sockaddr_in& addr) {
     userCount++;
     addr_ = addr;
     fd_ = sockFd;
+    // <fd>:<ip>:<port>
+    timeOutKey = std::to_string(fd_) + ":" + GetIP() + ":" + std::to_string(GetPort());
     writeBuff_.RetrieveAll();
     readBuff_.RetrieveAll();
     isClose_ = false;
-    LOG_INFO("Client[%d](%s:%d) in, userCount:%d", fd_, GetIP(), GetPort(), userCount.load());
+    LOG(INFO) << "Client[" << fd_ << "](" << GetIP() << ":" << GetPort() << ") connected, userCount:" << userCount.load();
 }
 
 void HttpConn::Close() {
@@ -28,7 +30,7 @@ void HttpConn::Close() {
     if (isClose_ == false) {
         isClose_ = true;
         userCount--;
-        LOG_INFO("Client[%d](%s:%d) quit, userCount:%d", fd_, GetIP(), GetPort(), userCount.load());
+        LOG(INFO) << "Client[" << fd_ << "](" << GetIP() << ":" << GetPort() << ") disconnected, userCount:" << userCount.load();
         close(fd_);
         fd_ = -1;  // 重新置为 -1
     }
@@ -121,7 +123,7 @@ bool HttpConn::Process() {
         return false;
     }
     else if (request_.parse(readBuff_)) {
-        LOG_DEBUG("Request path: %s", request_.path().c_str());
+        // LOG_DEBUG("Request path: %s", request_.path().c_str());
         response_.Init(srcDir, request_.path(), request_.IsKeepAlive(), 200);
     }
     else {
@@ -141,7 +143,12 @@ bool HttpConn::Process() {
         iovCnt_ = 2;
     }
 
-    LOG_DEBUG("Response fileSize:%d, channel:%d, totalBytes:%d", response_.FileLen(), iovCnt_, ToWriteBytes());
+    // LOG_DEBUG("Response fileSize:%d, channel:%d, totalBytes:%d", response_.FileLen(), iovCnt_, ToWriteBytes());
     return true;
 } 
+
+
+std::string HttpConn::GetTimeOutKey() const {
+    return timeOutKey;
+}
 

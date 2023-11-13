@@ -12,7 +12,6 @@
 #include <errno.h>
 #include <mysql/mysql.h>
 
-#include "../log/log.h"
 #include "../buffer/buffer.h"
 #include "../pool/sqlconnpool.h"
 #include "../pool/sqlconnRAII.h"

@@ -8,10 +8,10 @@
 
 #include <arpa/inet.h>     // sockaddr_in
 #include <atomic>
-
-#include "../log/log.h"
+#include <string>
 #include "../pool/sqlconnRAII.h"
 #include "../buffer/buffer.h"
+#include "../../lizy_log/include/logging.h"
 #include "httprequest.h"
 #include "httpresponse.h"
 
@@ -67,6 +67,10 @@ public:
     /// @return true-Yes, false-No
     bool IsKeepAlive() const;
 
+    /// @brief 获取conn对像超时任务的 key
+    /// @return key
+    std::string GetTimeOutKey() const;
+
     static bool isET;
     static const char* srcDir;
     static std::atomic<int> userCount;
@@ -74,6 +78,7 @@ public:
 private:
     int fd_;
     struct sockaddr_in addr_;
+    std::string timeOutKey;
 
     bool isClose_;
 
