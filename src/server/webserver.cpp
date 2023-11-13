@@ -257,13 +257,13 @@ void WebServer::DealListen_() {
 void WebServer::DealRead_(connPtr client) {
     assert(client);
     ExtentTime_(client); // 延长时间
-    threadpool_->enqueue(&WebServer::OnRead_, this, client); // 线程池处理
+    threadpool_->AddTask(std::bind(&WebServer::OnRead_, this, client)); // 线程池处理
 }
 
 void WebServer::DealWrite_(connPtr client) {
     assert(client);
     ExtentTime_(client); // 延长时间
-    threadpool_->enqueue(&WebServer::OnWrite_, this, client); // 线程池处理
+    threadpool_->AddTask(std::bind(&WebServer::OnWrite_, this, client)); // 线程池处理
 }
 
 void WebServer::OnRead_(connPtr client) {

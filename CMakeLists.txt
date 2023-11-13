@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 
 project(lizyWebServer)
 
-add_compile_options(-g -w -std=c++17)
+add_compile_options(-g -w -O2 -std=c++17)
 
 file(GLOB SOURCE_CPPS 
   "./src/pool/*.cpp" 
