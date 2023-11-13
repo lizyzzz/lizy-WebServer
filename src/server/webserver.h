@@ -12,6 +12,7 @@
 #include <string>
 #include <errno.h>
 #include <memory>
+#include <mutex>
 
 #include "epoller.h"
 #include "../timer/heaptimer.h"
@@ -45,6 +46,8 @@ public:
     /// @brief 服务器运行函数
     void Start();
 private:
+    typedef std::shared_ptr<HttpConn> connPtr; // 使用智能指针
+
     /// @brief 初始化监听的 socket
     /// @return true-成功, false-失败
     bool InitSocket_();
@@ -60,10 +63,10 @@ private:
     void DealListen_();
     /// @brief 处理 写 业务
     /// @param client 客户端指针
-    void DealWrite_(HttpConn* client);
+    void DealWrite_(connPtr client);
     /// @brief 处理 读 业务
     /// @param client 客户端指针
-    void DealRead_(HttpConn* client);
+    void DealRead_(connPtr client);
 
     /// @brief 发送错误信息并关闭连接
     /// @param fd socket fd
@@ -72,19 +75,19 @@ private:
 
     /// @brief 关闭客户端连接
     /// @param client 客户端结构体指针
-    void CloseConn_(HttpConn* client);
+    void CloseConn_(connPtr client);
 
     /// @brief 延长客户端超时时间
     /// @param client 客户端结构体指针
-    void ExtentTime_(HttpConn* client);
+    void ExtentTime_(connPtr client);
     
     /// @brief 读数据函数
     /// @param client 客户端指针
-    void OnRead_(HttpConn* client);
+    void OnRead_(connPtr client);
     /// @brief 写数据函数
     /// @param client 客户端指针
-    void OnWrite_(HttpConn* client);
-    void OnProcess(HttpConn* client);
+    void OnWrite_(connPtr client);
+    void OnProcess(connPtr client);
 
     /// @brief 设置非阻塞方式
     /// @param fd 文件描述符
@@ -104,10 +107,12 @@ private:
     uint32_t listenEvent_;
     uint32_t connEvent_;
 
-    std::unique_ptr<TimeWheel> timeWheel_;
-    std::unique_ptr<ThreadPool> threadpool_;
-    std::unique_ptr<Epoller> epoller_;
-    std::unordered_map<int, HttpConn*> users_;
+    std::unique_ptr<TimeWheel> timeWheel_;   // 线程安全
+    std::unique_ptr<ThreadPool> threadpool_; // 线程安全
+    std::unique_ptr<Epoller> epoller_;       // 注意并发安全
+    std::unordered_map<int, connPtr> users_; // fd-connPtr map(注意并发安全)
+
+    std::mutex users_lock_;
 };
 
 

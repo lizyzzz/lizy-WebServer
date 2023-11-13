@@ -202,7 +202,7 @@ void WebServer::SendError_(int fd, const char* info) {
     close(fd);
 }
 
-void WebServer::CloseConn_(HttpConn* client) {
+void WebServer::CloseConn_(connPtr client) {
     assert(client);
     LOG(INFO) << "Client[ " << client->GetFd() << "] quit!";
     epoller_->DelFd(client->GetFd());
@@ -210,12 +210,11 @@ void WebServer::CloseConn_(HttpConn* client) {
     client->Close();
     
     int fd = client->GetFd();
-    delete client;
-    client = nullptr;
+    std::lock_guard<std::mutex> lk(users_lock_);
     users_.erase(fd); // ***** 这里要把 fd 对应地从 users_ 删除 *****
 }
 
-void WebServer::ExtentTime_(HttpConn* client) {
+void WebServer::ExtentTime_(connPtr client) {
     assert(client);
     if (timeoutMS_ > 0) {
         timeWheel_->Addtask(client->GetTimeOutKey(), timeoutMS_, &WebServer::CloseConn_, this, client);
@@ -225,16 +224,17 @@ void WebServer::ExtentTime_(HttpConn* client) {
 void WebServer::AddClient_(int fd, sockaddr_in addr) {
     assert(fd > 0);
 
-    HttpConn* hc = new HttpConn();
+    connPtr hc = std::make_shared<HttpConn>();
     hc->Init(fd, addr);
-    users_[fd] = hc;
 
     if (timeoutMS_ > 0) {
-        timeWheel_->Addtask(hc->GetTimeOutKey(), timeoutMS_, &WebServer::CloseConn_, this, users_[fd]);
+        timeWheel_->Addtask(hc->GetTimeOutKey(), timeoutMS_, &WebServer::CloseConn_, this, hc);
     }
     epoller_->AddFd(fd, EPOLLIN | connEvent_);
     SetFdNonBlock(fd);
-    LOG(INFO) << "Client[ " << users_[fd]->GetFd() << "] connected!";
+    LOG(INFO) << "Client[ " << hc->GetFd() << "] connected!";
+    std::lock_guard<std::mutex> lk(users_lock_);
+    users_[fd] = hc;
 }
 
 void WebServer::DealListen_() {
@@ -254,31 +254,32 @@ void WebServer::DealListen_() {
     } while (listenEvent_ & EPOLLET); //保证读完
 }
 
-void WebServer::DealRead_(HttpConn* client) {
+void WebServer::DealRead_(connPtr client) {
     assert(client);
     ExtentTime_(client); // 延长时间
     threadpool_->enqueue(&WebServer::OnRead_, this, client); // 线程池处理
 }
 
-void WebServer::DealWrite_(HttpConn* client) {
+void WebServer::DealWrite_(connPtr client) {
     assert(client);
     ExtentTime_(client); // 延长时间
     threadpool_->enqueue(&WebServer::OnWrite_, this, client); // 线程池处理
 }
 
-void WebServer::OnRead_(HttpConn* client) {
+void WebServer::OnRead_(connPtr client) {
     assert(client);
     int ret = -1;
     int readErrno = 0;
     ret = client->Read(&readErrno);
     if (ret <= 0 && readErrno != EAGAIN) {
+        timeWheel_->RemoveTask(client->GetTimeOutKey());
         CloseConn_(client);
         return;
     }
     OnProcess(client);
 }
 
-void WebServer::OnProcess(HttpConn* client) {
+void WebServer::OnProcess(connPtr client) {
     if (client->Process()) {
         // 读数据并成功解析请求报文, 准备发送响应报文
         // 所以变成 EPOLLOUT 
@@ -290,7 +291,7 @@ void WebServer::OnProcess(HttpConn* client) {
     }
 }
 
-void WebServer::OnWrite_(HttpConn* client) {
+void WebServer::OnWrite_(connPtr client) {
     assert(client);
 
     int ret = -1;
@@ -311,6 +312,7 @@ void WebServer::OnWrite_(HttpConn* client) {
         }
     }
     // 其他情况
+    timeWheel_->RemoveTask(client->GetTimeOutKey());
     CloseConn_(client);
 }
 
