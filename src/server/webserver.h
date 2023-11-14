@@ -18,10 +18,12 @@
 #include "../pool/sqlconnpool.h"
 #include "../pool/sqlconnRAII.h"
 // #include "../pool/ThreadPool.hpp"
-#include "../pool/threadpool.h"
+// #include "../pool/threadpool.h"
 #include "../http/httpconn.h"
 #include "../../lizy_log/include/logging.h"
 #include "../../lizy_timewheel/include/timewheel.h"
+
+class ThreadPool;
 
 class WebServer {
 public:
