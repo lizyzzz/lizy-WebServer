@@ -145,7 +145,7 @@ bool WebServer::InitSocket_() {
         return false;
     }
     
-    SetFdNonBlock(listenFd_);
+    SetFdNonBlock(listenFd_); // 设置 listenFd_ 是非阻塞的
     return true;
 }
 
