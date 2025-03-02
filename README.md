@@ -59,7 +59,7 @@ git checkout feature
 * 编译
 ```
 # 创建日志文件目录
-mkdir logFile
+mkdir logs
 # 创建编译目录
 mkdir build
 # 进入编译目录
