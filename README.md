@@ -16,6 +16,8 @@
 ## 3. 目录树
 ```
 .
+├── lizy_log         日志子模块
+├── lizy_timewheel   定时器子模块
 ├── src         源代码
 │   ├── buffer    可自动增长的缓冲区
 │   ├── http      http请求和响应
@@ -40,15 +42,37 @@
 └── readme.md
 ```
 ## 4. 快速使用
+* 拉取项目
+```
+# --recursive 递归拉取子模块
+git clone --recursive https://github.com/lizyzzz/lizy-WebServer.git
+```
+
+* 切换到最新分支
+```
+# 进入项目目录
+cd 当前目录
+# 切换到最新分支
+git checkout feature  
+```
+
 * 编译
 ```
-cd 当前目录
+# 创建日志文件目录
+mkdir logFile
+# 创建编译目录
+mkdir build
+# 进入编译目录
+cd build
+# 编译
+cmake ..
 make
 ```
+
 * 运行
 ```
-cd 当前目录
-./bin/server
+# 在 build 目录下
+./server
 ```
 * 测试
 ```
