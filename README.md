@@ -48,6 +48,20 @@
 git clone --recursive https://github.com/lizyzzz/lizy-WebServer.git
 ```
 
+* 创建 mysql 数据库表
+```
+CREATE DATABASE IF NOT EXISTS webserver;
+
+USE webserver;
+
+CREATE TABLE user (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(20) UNIQUE,
+    password VARCHAR(20) NOT NULL
+);
+
+```
+
 * 切换到最新分支
 ```
 # 进入项目目录
@@ -73,6 +87,8 @@ make
 ```
 # 在 build 目录下
 ./server
+
+# 如显示数据库连接失败, 请检查 mysql 用户名 密码和数据库名
 ```
 * 测试
 ```
